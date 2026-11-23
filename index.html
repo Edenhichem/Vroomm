@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vroom — Gestion de véhicule</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0d1c;--s1:#15172b;--s2:#1e2140;--line:#2c3060;--tx:#e8f1ec;--mu:#9a9fc4;--ac:#3ee6b0;--am:#ffc857;--rd:#ff5d73;--bl:#5b8def;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--mu:#9a9fc4}
+*{box-sizing:inherit;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--tx);font:500 14px/1.45 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:480px;margin:0 auto;height:100%;display:flex;flex-direction:column;position:relative}
+main{flex:1;overflow-y:auto;padding:14px 16px 20px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:4px 0 14px}
+h2{font-size:15px;font-weight:800;margin:20px 0 10px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
+.top b{font-weight:800}.top span{color:var(--mu);font-size:12px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:14px}
+.hero{background:linear-gradient(135deg,#3a2a8c,#1a1b3f);border-radius:22px;padding:18px;border:1px solid #4a3aa8}
+.hero .n{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#173a3a;color:var(--ac)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat .v{font-size:19px;font-weight:800;margin-top:2px}.stat .l{color:var(--mu);font-size:12px}
+.alert{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;margin-bottom:8px;border:1px solid}
+.alert.w{background:#2a2412;border-color:#5a4b1c}.alert.d{background:#2c1513;border-color:#6a2a25}
+.alert i{width:8px;height:8px;border-radius:50%;flex:none}.alert.w i{background:var(--am)}.alert.d i{background:var(--rd)}
+.alert small{display:block;color:var(--mu)}
+.bar{height:6px;background:var(--s2);border-radius:9px;overflow:hidden;margin-top:6px}.bar div{height:100%;border-radius:9px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}.row small{color:var(--mu);display:block}
+label{display:block;color:var(--mu);font-size:12px;margin:12px 0 5px}
+input,select{width:100%;background:var(--s2);color:var(--tx);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;font-size:16px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn{width:100%;margin-top:16px;background:var(--ac);color:#04130f;border:0;border-radius:14px;padding:14px;font:800 15px Manrope,system-ui,sans-serif;cursor:pointer}
+.btn.g{background:var(--s2);color:var(--tx);border:1px solid var(--line)}.btn.r{background:#3a1a17;color:#ff9b92}
+.seg{display:flex;gap:6px}.seg button{flex:1;background:var(--s2);color:var(--mu);border:1px solid var(--line);border-radius:10px;padding:10px 0;font:600 13px Manrope,system-ui,sans-serif}
+.seg button.on{background:var(--ac);color:#04130f;border-color:var(--ac)}
+nav{display:flex;border-top:1px solid var(--line);background:#101226}
+nav button{flex:1;background:none;border:0;color:var(--mu);padding:9px 0 11px;font:600 11px Manrope,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--ac)}nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.x{background:none;border:0;color:var(--mu);font-size:20px;padding:4px 8px}
+.sw{position:relative;width:46px;height:26px;flex:none}.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.sw span{position:absolute;inset:0;background:var(--s2);border:1px solid var(--line);border-radius:99px;transition:.2s}
+.sw span:after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--mu);transition:.2s}
+.sw input:checked+span{background:var(--ac);border-color:var(--ac)}.sw input:checked+span:after{left:22px;background:#04130f}
+#lock{position:fixed;inset:0;background:var(--bg);z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;padding-top:calc(24px + env(safe-area-inset-top,0px))}
+#lock h1{margin:14px 0 4px}#lock p{color:var(--mu);text-align:center;min-height:20px}
+.dots{display:flex;gap:14px;margin:22px 0}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ac)}.dots i.f{background:var(--ac)}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+.pad button{height:72px;border-radius:50%;background:var(--s1);border:1px solid var(--line);color:var(--tx);font:600 24px Manrope,system-ui,sans-serif}
+.pad button:active{background:var(--s2)}
+.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--s2);border:1px solid var(--ac);padding:10px 18px;border-radius:99px;font-weight:600;z-index:10}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:1});
+const today=()=>new Date().toISOString().slice(0,10);
+const KEY='vroom:v1';
+const seed={pin:null,auto:true,veh:{name:'Volkswagen Polo 6R Life',year:2014,fuel:'Essence',km:319764,plate:'002619-114-49',buy:316000},
+exp:[{c:'Carburant',d:'Plein essence SP95-E10',a:72.5,t:'2026-06-01'},{c:'Lavage',d:'Lavage complet',a:15,t:'2026-06-05'},{c:'Carburant',d:'Sans plomb 95',a:68,t:'2026-06-13'}],
+docs:[],tab:'syn'};
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||seed}catch(e){S=seed}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let tab='syn',locked=true,buf='',first='',toastT;
+const cats=['Carburant','Vidange','Pneus','Assurance','Contrôle technique','Réparation','Lavage','Parking','Péage','Divers'];
+const col={Carburant:'#3ee6b0',Vidange:'#ffc857',Pneus:'#5b8def',Assurance:'#b07cf0',Lavage:'#35c6d6','Contrôle technique':'#f08a4b',Réparation:'#ff5d73',Parking:'#d66fa8',Péage:'#9bb0a3',Divers:'#7a8f83'};
+const ic={syn:'<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>',veh:'<path d="M5 16l1.5-5.5A2 2 0 018.4 9h7.2a2 2 0 011.9 1.5L19 16M4 16h16v3H4zM7 19v1.5M17 19v1.5"/>',dep:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/>',doc:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',acc:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'};
+const names={syn:'Synthèse',veh:'Véhicule',dep:'Dépenses',doc:'Documents',acc:'Compte'};
+const total=()=>S.exp.reduce((s,e)=>s+e.a,0);
+async function hash(p){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('vroom|'+p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return btoa('vroom|'+p)}}
+function toast(m){clearTimeout(toastT);document.querySelectorAll('.toast').forEach(e=>e.remove());const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);toastT=setTimeout(()=>t.remove(),2200)}
+
+function lockView(){
+ const set=!S.pin;
+ const msg=set?(first?'Confirmez votre code':'Créez un code à 4 chiffres'):'Entrez votre code';
+ return `<div id="lock"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3ee6b0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+ <h1>Vroom</h1><p id="lm">${msg}</p><div class="dots" id="dots">${[0,1,2,3].map(i=>`<i class="${i<buf.length?'f':''}"></i>`).join('')}</div>
+ <div class="pad">${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button data-k="${k}" aria-label="${k==='⌫'?'Effacer':k}">${k}</button>`).join('')}</div></div>`}
+async function key(k){
+ if(k==='⌫')buf=buf.slice(0,-1);else if(buf.length<4)buf+=k;
+ if(buf.length<4){draw();return}
+ const h=await hash(buf);
+ if(!S.pin){
+  if(!first){first=h;buf='';draw();return}
+  if(first===h){S.pin=h;save();first='';buf='';locked=false;toast('Code enregistré')}
+  else{first='';buf='';draw();bad('Les codes diffèrent. Recommencez.');return}
+ }else if(S.pin===h){buf='';locked=false}
+ else{buf='';draw();bad('Code incorrect');return}
+ draw()}
+function bad(m){const d=$('#dots');if(d){d.classList.add('shake')}const l=$('#lm');if(l)l.textContent=m}
+
+function alerts(){return `<div class="alert d"><i></i><div><b>Assurance proche de l’expiration</b><small>Pensez à renouveler et à ajouter la nouvelle attestation.</small></div></div>
+<div class="alert w"><i></i><div><b>Distribution à surveiller</b><small>49 320 km restants avant le prochain remplacement.</small></div></div>`}
+function donut(){
+ const m={};S.exp.forEach(e=>m[e.c]=(m[e.c]||0)+e.a);const T=total();if(!T)return '<p style="color:var(--mu)">Ajoutez une dépense pour voir la répartition.</p>';
+ let off=0;const R=42,C=2*Math.PI*R;
+ const arcs=Object.entries(m).map(([c,v])=>{const l=v/T*C;const s=`<circle r="${R}" cx="60" cy="60" fill="none" stroke="${col[c]}" stroke-width="16" stroke-dasharray="${l} ${C-l}" stroke-dashoffset="${-off}" transform="rotate(-90 60 60)"/>`;off+=l;return s}).join('');
+ const lg=Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div style="display:flex;gap:8px;align-items:center"><i style="width:10px;height:10px;border-radius:3px;background:${col[c]}"></i>${c} <span style="color:var(--mu)">${Math.round(v/T*100)} %</span></div>`).join('');
+ return `<div style="display:flex;gap:16px;align-items:center"><svg width="120" height="120" viewBox="0 0 120 120">${arcs}</svg><div style="display:grid;gap:5px;font-size:13px">${lg}</div></div>`}
+function bars(){const items=[['Vidange',0,'#ff5d73'],['Assurance',0,'#ff5d73'],['Contrôle technique',0,'#ff5d73'],['Chaîne de distribution',55,'#3ee6b0']];
+ return items.map(([n,p,c])=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><b>${n}</b><span style="color:var(--mu)">${p?p+' %':'À faire'}</span></div><div class="bar"><div style="width:${Math.max(p,3)}%;background:${c}"></div></div></div>`).join('')}
+
+function vSyn(){const v=S.veh,T=total();return `<h1>Bonjour</h1>${alerts()}
+<h2>Mon véhicule</h2><div class="hero"><span class="pill">Actif</span><div class="n" style="margin-top:10px">${esc(v.name)}</div><div style="color:var(--mu)">${esc(v.year)} · ${esc(v.fuel)} · ${fmt(v.km)} km</div></div>
+<h2>Synthèse</h2><div class="grid"><div class="card stat"><div class="l">Dépenses totales</div><div class="v">${fmt(T)} DA</div></div><div class="card stat"><div class="l">Opérations</div><div class="v">${S.exp.length}</div></div>
+<div class="card stat"><div class="l">Coût par kilomètre</div><div class="v">${fmt(T/Math.max(1,v.km-v.buy))} DA</div></div><div class="card stat"><div class="l">Distance parcourue</div><div class="v">${fmt(Math.max(0,v.km-v.buy))} km</div></div></div>
+<h2>Entretien planifié</h2><div class="card">${bars()}</div><h2>Répartition des coûts</h2><div class="card">${donut()}</div>`}
+function vid(){const v=S.veh,d=v.vid;let st='<p style="color:var(--mu)">Aucune vidange enregistrée.</p>';
+ if(d){const used=Math.max(0,v.km-d.km),left=d.int-used,p=Math.min(100,Math.round(used/d.int*100));
+  st=`<div style="display:flex;justify-content:space-between"><b>${left>0?fmt(left)+' km restants':'À faire maintenant'}</b><span style="color:var(--mu)">${p} %</span></div><div class="bar"><div style="width:${Math.max(p,3)}%;background:${p>=90?'var(--rd)':p>=70?'var(--am)':'var(--ac)'}"></div></div><small style="color:var(--mu)">Dernière vidange à ${fmt(d.km)} km · tous les ${fmt(d.int)} km</small>`}
+ return `<h2>Plan d’entretien</h2><div class="card">${st}<label for="vk">Kilométrage de la vidange</label><input id="vk" type="number" inputmode="numeric" value="${v.km}"><label for="vi">Intervalle</label><select id="vi">${[5000,7500,10000,15000].map(n=>`<option value="${n}" ${d&&d.int===n?'selected':''}>${fmt(n)} km</option>`).join('')}</select><button class="btn" id="saveVid">Enregistrer la vidange</button></div>`}
+function vVeh(){const v=S.veh;return `<h1>Véhicule</h1><div class="hero"><div class="n">${esc(v.name)}</div><div style="color:var(--mu)">Immatriculé · ${esc(v.plate)}</div></div>
+<h2>Fiche technique</h2><div class="card">${[['Année',v.year],['Énergie',v.fuel],['Kilométrage d’achat',fmt(v.buy)+' km'],['Kilométrage actuel',fmt(v.km)+' km']].map(([a,b])=>`<div class="row"><span style="color:var(--mu)">${a}</span><b>${esc(b)}</b></div>`).join('')}</div>
+${vid()}<h2>Mettre à jour le kilométrage</h2><div class="card"><label for="km">Nouveau kilométrage</label><input id="km" type="number" inputmode="numeric" placeholder="${v.km}"><button class="btn" id="saveKm">Enregistrer</button></div>`}
+function vDep(){return `<h1>Livre de compte</h1><div class="hero"><div style="color:var(--mu)">Budget consommé</div><div class="n" style="font-size:32px">${fmt(total())} DA</div><div style="color:var(--ac)">${S.exp.length} opérations</div></div>
+<h2>Saisir une dépense</h2><div class="card"><label for="ec">Catégorie</label><select id="ec">${cats.map(c=>`<option>${c}</option>`).join('')}</select>
+<label for="ea">Montant (DA)</label><input id="ea" type="number" inputmode="decimal" placeholder="0"><label for="ed">Description</label><input id="ed" placeholder="Ex. Plein d’essence"><label for="et">Date</label><input id="et" type="date" value="${today()}"><button class="btn" id="addE">Enregistrer la dépense</button></div>
+<h2>Historique</h2><div class="card">${S.exp.length?S.exp.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="row"><div><b>${esc(e.d||e.c)}</b><small>${esc(e.c)} · ${esc(e.t)}</small></div><div style="display:flex;align-items:center"><b>−${fmt(e.a)}</b><button class="x" data-del="${i}" aria-label="Supprimer">×</button></div></div>`).join(''):'<p style="color:var(--mu)">Aucune dépense. Saisissez la première ci-dessus.</p>'}</div>`}
+function vDoc(){return `<h1>Documents</h1><div class="card"><label for="dn">Nom du document</label><input id="dn" placeholder="Ex. Attestation d’assurance"><label>Type</label><div class="seg" id="dt">${['Carte grise','Assurance','Contrôle','Facture'].map((t,i)=>`<button class="${i?'':'on'}">${t}</button>`).join('')}</div><button class="btn" id="addD">Ajouter au coffre-fort</button></div>
+<h2>Coffre-fort</h2><div class="card">${S.docs.length?S.docs.map((d,i)=>`<div class="row"><div><b>${esc(d.n)}</b><small>${esc(d.t)} · ${esc(d.d)}</small></div><button class="x" data-dd="${i}" aria-label="Supprimer">×</button></div>`).join(''):'<p style="color:var(--mu)">Aucun document. Ajoutez votre carte grise ou votre attestation d’assurance.</p>'}</div>`}
+function vAcc(){return `<h1>Compte</h1><div class="card"><div class="row"><div><b>Verrouillage automatique</b><small>Redemande le code au retour dans l’app</small></div><label class="sw" style="margin:0"><input type="checkbox" id="auto" ${S.auto?'checked':''}><span></span></label></div>
+<div class="row"><div><b>Données</b><small>Stockées sur cet appareil</small></div><span class="pill">Protégé</span></div></div>
+<button class="btn" id="lockNow">Verrouiller maintenant</button><button class="btn g" id="chgPin">Changer le code</button><button class="btn r" id="reset">Effacer toutes les données</button>`}
+
+function draw(){
+ const V={syn:vSyn,veh:vVeh,dep:vDep,doc:vDoc,acc:vAcc};
+ $('#app').innerHTML=(locked?lockView():'')+`<div class="top"><div><b>${esc(S.veh.name)}</b></div><span>${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}</span></div><main>${V[tab]()}</main><nav>${Object.keys(names).map(k=>`<button data-t="${k}" class="${k===tab?'on':''}"><svg viewBox="0 0 24 24">${ic[k]}</svg>${names[k]}</button>`).join('')}</nav>`;
+ bind()}
+function bind(){
+ document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;draw();$('main').scrollTop=0});
+ const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+ on('#saveKm',()=>{const k=+$('#km').value;if(!k||k<S.veh.km){toast('Entrez un kilométrage supérieur à l’actuel');return}S.veh.km=k;save();draw();toast('Kilométrage mis à jour')});
+ on('#saveVid',()=>{const k=+$('#vk').value;if(!k){toast('Entrez le kilométrage');return}S.veh.vid={km:k,int:+$('#vi').value};save();draw();toast('Vidange enregistrée')});
+ on('#addE',()=>{const a=+$('#ea').value;if(!(a>0)){toast('Entrez un montant valide');return}S.exp.push({c:$('#ec').value,d:$('#ed').value.trim(),a,t:$('#et').value||today()});save();draw();toast('Dépense enregistrée')});
+ document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.exp.splice(+b.dataset.del,1);save();draw()});
+ document.querySelectorAll('#dt button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#dt button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+ on('#addD',()=>{const n=$('#dn').value.trim();if(!n){toast('Donnez un nom au document');return}S.docs.push({n,t:$('#dt .on').textContent,d:today()});save();draw();toast('Document ajouté')});
+ document.querySelectorAll('[data-dd]').forEach(b=>b.onclick=()=>{S.docs.splice(+b.dataset.dd,1);save();draw()});
+ const au=$('#auto');if(au)au.onchange=()=>{S.auto=au.checked;save()};
+ on('#lockNow',()=>{locked=true;buf='';draw()});
+ on('#chgPin',()=>{S.pin=null;first='';buf='';locked=true;save();draw()});
+ on('#reset',()=>{if(confirm('Effacer toutes les données et le code ?')){S=JSON.parse(JSON.stringify(seed));S.exp=[];try{localStorage.removeItem(KEY)}catch(e){}locked=true;buf='';first='';tab='syn';draw()}})}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.auto&&S.pin&&!locked){locked=true;buf='';draw()}});
+draw();
+</script>
+</body>
+</html>
